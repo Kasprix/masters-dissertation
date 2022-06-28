@@ -11,6 +11,7 @@ states = ["In", "Out", "Undecided"]
 class Agent:
   def __init__(self, name, state):
     self.name = name
+
     # 0,1,2 in,out,undec
     self.state = states[state]
     self.attacking = []
@@ -47,17 +48,18 @@ def create_agent(agent_name, state):
   return agent_object
 
 
-p1 = Agent("Reece", 0)
+p1 = create_agent("Reece", 0)
 p1.myfunc()
-p1.attack("p1", p1.name)
-print(p1.get_argument_state())
 
 
-p2 = Agent("Carly", 0)
+p2 = create_agent("Carly", 0)
 p2.myfunc()
 p2.attack("p1", p1.name)
-print(p2.get_argument_state())
 
-
+print("\nAttacking:")
+print(p1.attacking)
 print(p2.attacking)
+
+print("\nAttacked By:")
 print(p1.attacked_by)
+print(p2.attacked_by)
