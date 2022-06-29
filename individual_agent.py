@@ -4,9 +4,7 @@ import sys
 def str_to_class(classname):
     return getattr(sys.modules[__name__], classname)
 
-
 states = ["In", "Out", "Undecided"]
-
 
 class Agent:
   def __init__(self, name, state):
@@ -33,7 +31,6 @@ class Agent:
 
     if hasattr(str_to_class(obj_name), "name"):
 
-
         agent.attacking.append(victim)
 
         print(agent.name, "is now hurling rocks at a", victim)
@@ -43,23 +40,26 @@ class Agent:
     else:
         print("shit")
 
+
 def create_agent(agent_name, state):
   agent_object = Agent(agent_name, state)
   return agent_object
 
 
 p1 = create_agent("Reece", 0)
-p1.myfunc()
-
-
 p2 = create_agent("Carly", 0)
+
+p1.myfunc()
 p2.myfunc()
+
 p2.attack("p1", p1.name)
 
-print("\nAttacking:")
+print("\n" + p1.name, "is attacking:")
 print(p1.attacking)
+print("\n" + p2.name, "is attacking:")
 print(p2.attacking)
 
-print("\nAttacked By:")
+print("\n" + p1.name, "is attacked by:")
 print(p1.attacked_by)
+print("\n" + p2.name, "is attacked by:")
 print(p2.attacked_by)
