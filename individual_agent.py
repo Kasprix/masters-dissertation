@@ -30,6 +30,10 @@ class Agent:
     else:
       return "Error"
 
+  def argument_state(agent):
+    for x in agent.attacked_by:
+      print(str_to_class(x))
+
   def attack(agent, obj_name, victim):
 
     if hasattr(str_to_class(obj_name), "name"):
@@ -68,6 +72,11 @@ print("\n" + p1.name, "is attacking:")
 print(p1.attacking)
 print("\n" + p2.name, "is attacking:")
 print(p2.attacking)
+print("State for Reece is", p1.get_argument_state())
+
+print(p1.argument_state())
+
+
 
 print("\n" + p1.name, "is attacked by:")
 print(p1.attacked_by)
