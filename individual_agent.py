@@ -108,7 +108,10 @@ def create_framework(variable):
   return agent_list
 
 # Initialises Framework with variable of arguments set by user
-list_of_objects = create_framework(20)
+list_of_objects = create_framework(5)
+
+
+# TODO find out if the search is done iteravely for each step, terminate when AF labellings are the same
 
 def grounded_initial_labellings(framework):
 
@@ -149,10 +152,29 @@ def grounded_initial_labellings(framework):
 
   return framework
 
+def prefered_initial_labellings(framework):
+
+
+  # Finds all arguments attacked by nothing and declares their state as in 
+  for v in framework:
+    v.state = "In"
+    
+  # Now we change the state of all arguments who are only attacked by OUTs to IN
+  for v in framework:
+    all_attacks_are_out = True
+    for x in v.attacked_by:
+      if x.state == "In":
+        all_attacks_are_out = False
+      else: next
+    if all_attacks_are_out == False:
+      v.state = "Out"
+
+
+  return framework
 
 grounded_framework = grounded_initial_labellings(list_of_objects)
 
-# TODO Make a class possibly for the two users (Pro & Opp)
+# TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
 
 '''
 TODO Grounded Rules
