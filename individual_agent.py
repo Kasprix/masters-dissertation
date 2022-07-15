@@ -13,12 +13,15 @@ class Agent:
     self.name = name
 
     # 0,1,2 in,out,undec
-    self.state = "Out"
+    self.state = "Not Declared"
     self.attacking = []
     self.attacked_by = []
 
   def myfunc(agent):
     print("Hello my name is", agent.name, "& my state is", agent.state)
+
+  def change_state(agent, state):
+    agent.state = state
 
   # Checks if argument is in or out
   def get_argument_state(agent):
@@ -108,21 +111,41 @@ def create_framework(variable):
 list_of_objects = create_framework(20)
 
 def grounded_initial_labellings(framework):
+
+
+  # Finds all arguments attacked by nothing and declares their state as in 
   for v in framework:
     if len(v.attacked_by) == 0:
       v.state = "In"
     for x in v.attacked_by:
       print(v.name, 'is attacked by', x.name)
-
     print(v.name, "Current state is ", v.state)
 
-
+  # All arguments that are ONLY attacked by an argument who's state is declared in, are altered to state OUT
   for v in framework:
     for x in v.attacked_by:
       # TODO find out if Out is called if it's being attacked by one or more arguments, for now it's coded on the assumption it means one attacker
       if x.state == "In" and len(v.attacked_by) == 1 :
-        v.state == "Out"
+        v.state = "Out"
         print(v.name, "Changed to", v.state)
+
+  # Now we change the state of all arguments who are only attacked by OUTs to IN
+  for v in framework:
+    all_attacks_are_out = True
+    for x in v.attacked_by:
+      if x.state != "Out":
+        all_attacks_are_out = False
+      else: next
+    if all_attacks_are_out == True:
+      v.state = "In"
+
+  # Change remaining to UNDECIDED
+  for v in framework:
+    if v.state == "Not Declared":
+      v.state = "Undec" 
+
+  print("Updated List")
+  for v in framework: print("The state of", v.name, "is", v.state)
 
   return framework
 
