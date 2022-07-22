@@ -177,11 +177,6 @@ grounded_framework = grounded_initial_labellings(list_of_objects)
 # TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
 
 '''
-TODO Grounded Rules
-IN For all unattacked arguments
-OUT to any argument that is attacked and just made IN
-IN to all who are attacked by only OUTS
-ANY Remaining arguments are deemed UNDEC
 
 TODO Game tree function that constructs the gametree for all possible outcomes from playing that game
 The OPP can reference the gametree to decide its next move

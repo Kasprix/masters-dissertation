@@ -86,7 +86,8 @@ def create_framework(variable):
     arguments_excluding_value = [x for x in agent_list if x != names]
 
     # If the value is below the generated threshold, then the agent will attack a random agent
-    if random_value < random_threshhold:
+    # TODO check if arbitary number or random_threshold works better
+    if random_value < 8:
       victim = random.choice(arguments_excluding_value)
       print(str(names.name), "Attacks", victim.name)
       names.attack_agent(victim)
@@ -105,10 +106,44 @@ def create_framework(variable):
   return agent_list
 
 # Initialises Framework with variable of arguments set by user
-list_of_objects = create_framework(10)
+list_of_objects = create_framework(15)
 
 
 # TODO find out if the search is done iteravely for each step, terminate when AF labellings are the same
+def check_legal_state(label):
+  illegal = False
+  if label.state == "In":
+    for x in label.attacked_by: 
+      if x.state != "Out": illegal == True
+    if illegal == True: print(label.name, "is illegally IN")
+    elif illegal == False: print(label.name, "is legally IN")
+    else: next
+
+
+  if label.state == "Out":
+    temp_state_list = []
+    for x in label.attacked_by:
+      temp_state_list.append(x)
+    if "In" not in temp_state_list: illegal == True
+    if illegal == True: print(label.name, "is illegally OUT")
+    elif illegal == False: print(label.name, "is legally OUT")
+
+
+  if label.state == "Undec":
+    temp_out_list = []
+    temp_undec_list = []
+    for x in label.attacked_by: 
+      if x.state == "In": illegal == True
+      if x.state == "Out": temp_out_list.append(x)
+      if x.state == "Undec": temp_undec_list.append(x)
+    if illegal == False and not temp_out_list and not temp_undec_list: print(label.name, "is legally UNDEC")
+    elif illegal == True: print(label.name, "is illegally UNDEC")
+    else: 
+      illegal ==  True
+      print(label.name, "is illegally UNDEC")
+
+  return label.name
+
 
 
 def grounded_initial_labellings(framework):
@@ -172,8 +207,11 @@ def prefered_initial_labellings(framework):
 
   list_of_states = ["Some Things"]
   temp_list_of_states = ["Should be seperate"]
+
+
   # Finds all arguments attacked by nothing and declares their state as in 
 
+  count = 1
   while list_of_states != temp_list_of_states:
 
     list_of_states.clear()
@@ -182,11 +220,13 @@ def prefered_initial_labellings(framework):
     for v in framework:
       list_of_states.append(v.state)
 
-    # Finds all arguments attacked by nothing and declares their state as in 
+    # Finds all arguments and declares them in
     for v in framework:
       v.state = "In"
+
+    
       
-    # Now we change the state of all arguments who are only attacked by OUTs to IN
+    # Now we change the state of all arguments who are only attacked by Ins to OUT
     for v in framework:
       all_attacks_are_out = True
       for x in v.attacked_by:
@@ -195,14 +235,34 @@ def prefered_initial_labellings(framework):
         else: next
       if all_attacks_are_out == False:
         v.state = "Out"
+      if len(v.attacked_by) == 0:
+        v.state = "In"
 
+    for v in framework:
+      state_list = []
+      for x in v.attacked_by:
+        state_list.append(x.state)
+      # Checks if argument is illegally Out and is being attacked and none of the attackers are In
+      if "In" not in state_list and len(state_list) > 0 and v.state == "Out":
+        v.state = "Undec"
+        print(v.name, "is Fake News")
+        print(v.name, "current state is:", v.state)
+        print(state_list)
+
+    # TODO Super Illegal IN and Illegal in, Super Illegal if attacked by legally IN 
+      
     
     for v in framework:
       temp_list_of_states.append(v.state)
 
-    print("Brrrr")
+    for v in framework:
+      print("Hello I am argument", v.name, "and my state is", v.state, "and I am also attacked by", v.attacked_by)
 
-  print("Complete")
+  for v in framework:
+    print(check_legal_state(v))
+
+  count += 1
+  print(count)
 
 
   return framework
