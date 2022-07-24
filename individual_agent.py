@@ -393,7 +393,8 @@ def create_game_tree(framework, initial_argument):
 
       for i in range(len(matches)):
         tempy = []
-        tempy.insert(len(test_search[0]), matches[i][1])
+        tempy.append(test_search[0])
+        tempy[0].insert(len(test_search[0]), matches[i][1])
         print("Tempy:", tempy)
 
       print(replacement_appendment)
