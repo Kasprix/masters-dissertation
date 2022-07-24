@@ -253,8 +253,6 @@ def deploy_gametree(framework, selected_argument):
         starting_argument = x
         break
     
-
-
   return starting_argument
 
 
@@ -309,19 +307,156 @@ def search_tree(framework, starting_argument):
   else: print("Terminate")
   print(list_of_pairs)
 
-# Initialises Framework with variable of arguments set by user
-list_of_objects = create_framework(3)
-grounded_framework = prefered_initial_labellings(list_of_objects)
-bangbang = deploy_gametree(grounded_framework, "a")
 
-for x in grounded_framework:
+def create_game_tree(framework, initial_argument):
+
   attack_list = []
-  for y in x.attacked_by:
-    attack_list.append(y.name)
-  print (x.name, "is attacked by", attack_list)
+
+  # Gathers all the pairs of attacks and if attacked by none then returns a "" pair
+  for x in framework:
+    if len(x.attacked_by) == 0:
+      attack_list.append([x.name, ""])
+    else:
+      for y in x.attacked_by:
+        attack_list.append([x.name, y.name])
+        print (x.name, "is attacked by", y.name)
+  print(attack_list, "\n")
+
+  # Matches are the pairs in attack list that have the same first value as initial argument
+  # E.g. if a is initial argument and there was a pair [a,b] it would extract that pair and remove from the attack list so it can't be used again
+  matches = [x for x in attack_list if x[0] == initial_argument]
+  attack_list = [x for x in attack_list if x not in matches]
+
+  # Print all matches that start with initial argument
+  print("Matches:", matches, "\n")
+  print("New Attack List:", attack_list, "\n")
 
 
-search_tree(grounded_framework, bangbang)
+  # Stores the incremental new arguments that are found
+  new_argument = []
+  list_of_lists = []
+
+  # Adds first value to the search tree for the list of lists
+  list_of_lists.append([initial_argument])
+
+  for x in matches:
+    # Appends second value in pair
+    new_argument.append(x[1])
+
+  print("New Arguments:", new_argument)
+
+  new_list = []
+
+  # Takes the values from the new argument list, 
+  for x in new_argument:
+    # If a blank value "", means nothing attaccks the argument so just leave the argument as last value in that specific list
+    if x == "": 
+      # Takes the values from the last iteration of list of lists and appends the new value (in this case there isnt one)
+      next
+
+      #add_new_arg = list_of_lists[0]
+      #new_list.append(add_new_arg)
+
+      # Takes the values from the last iteration of list of lists and appends the new value [x]
+    else:
+      add_new_arg = list_of_lists[0]
+      new_list_item = add_new_arg + [x]
+      new_list.append(new_list_item)
+
+  # Updates new list
+  list_of_lists = new_list
+
+  print("Updated List of Lists:", list_of_lists)
+
+  # ------------------------------------------------------------------------
+
+  while len(new_argument) != 0:
+    count = 1
+    for x in new_argument:
+      print("\nITERATION", count)
+      print("Name", x)
+      matches = [y for y in attack_list if y[0] == x]
+      attack_list = [x for x in attack_list if x not in matches]
+
+      # Print all matches that start with initial argument
+      print("Matches:", matches, "\n")
+      print("New Attack List:", attack_list, "\n")
+
+
+      for match in matches:
+        print("Individual match", match)
+      count += 1
+
+      test_search = [g for g in list_of_lists if g[-1] == x]
+
+      replacement_appendment = []
+
+      for i in range(len(matches)):
+        tempy = []
+        tempy.insert(len(test_search[0]), matches[i][1])
+        print("Tempy:", tempy)
+
+      print(replacement_appendment)
+
+      
+
+      test_search[0].insert(len(test_search[0]), matches[0][1])
+
+      print("Test Search", test_search)
+
+      print(list_of_lists)
+
+      
+      
+      
+        
+
+
+    new_argument = []
+  
+
+
+
+'''
+  while len(attack_list) > 0:
+    next_search = [x for x in attack_list if x[0] == initial_argument]
+    for x in next_search:
+ '''     
+
+'''
+  for x in matches:
+    layer2 = [y for y in attack_list if y[0] == x[1]]
+    attack_list = [x for x in attack_list if x not in layer2]
+    print("Layer 2:", layer2)
+    print("Attack List:", attack_list)
+
+  print("\n")
+
+  for x in layer2:
+    layer3 = [y for y in attack_list if y[0] == x[1]]
+    attack_list = [x for x in attack_list if x not in layer3]
+    print("Layer 3:", layer3)
+    print("Attack List:", attack_list)
+    if not layer3: break
+
+  print("\n")
+
+  
+  for x in layer3:
+    layer4 = [y for y in attack_list if y[0] == x[1]]
+    attack_list = [x for x in attack_list if x not in layer4]
+    print("Layer 4:", layer4)
+    print("Attack List:", attack_list)
+    if not layer4: break
+'''
+# Initialises Framework with variable of arguments set by user
+list_of_objects = create_framework(6)
+grounded_framework = prefered_initial_labellings(list_of_objects)
+create_game_tree(grounded_framework, "a")
+
+
+
+# search_tree(grounded_framework, bangbang)
 
 '''
 TODO Go over the rules and function to ensure logic makes sense
