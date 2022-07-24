@@ -1,6 +1,7 @@
 import sys
 import string
 import random
+import pickle
 
 
 # get the object from the object name
@@ -52,7 +53,7 @@ def create_framework(variable):
     arguments_excluding_value = [x for x in agent_list if x != names]
 
     # If the value is below the generated threshold, then the agent will attack a random agent
-    # TODO check if arbitary number or random_threshold works better
+    # TODO rather than using random_threshold, allow user to enter the odds of attack to determine the game
 
     # if value less than 8 then attack a random argument
     if random_value < 8:
@@ -60,8 +61,8 @@ def create_framework(variable):
       print(str(names.name), "Attacks", victim.name)
       names.attack_agent(victim)
 
-      # Checks and gives 30% odds of the argument choosing to attack yet another argument
-      if random.randint(0,9) < 3:
+      # Checks and gives 60% odds of the argument choosing to attack yet another argument
+      if random.randint(0,9) < 6:
         arguments_excluding_value = [x for x in arguments_excluding_value if x != victim]
         otherVictim = random.choice(arguments_excluding_value)
         names.attack_agent(otherVictim)
@@ -70,12 +71,6 @@ def create_framework(variable):
       print(names.name, "Leaves", random.choice(arguments_excluding_value).name)
 
   return agent_list
-
-# Initialises Framework with variable of arguments set by user
-list_of_objects = create_framework(15)
-
-
-# TODO find out if the search is done iteravely for each step, terminate when AF labellings are the same
 
 # Checks to see if argumement's state is considered legal via the constraints the labelling system applies to it.
 def check_legal_state(label):
@@ -106,9 +101,11 @@ def check_legal_state(label):
     temp_out_list = []
     temp_undec_list = []
     for x in label.attacked_by: 
+      # Checks if an IN attacks and counts the OUTS and UNDEC that Attack
       if x.state == "In": illegal == True
       if x.state == "Out": temp_out_list.append(x)
       if x.state == "Undec": temp_undec_list.append(x)
+    # If illegal is still false and and an OUT and UNDEC is attacking 
     if illegal == False and not temp_out_list and not temp_undec_list: print(label.name, "is legally UNDEC")
     elif illegal == True: print(label.name, "is illegally UNDEC")
     else: 
@@ -223,21 +220,111 @@ def prefered_initial_labellings(framework):
     for v in framework:
       temp_list_of_states.append(v.state)
 
+  legal_game = True
   for v in framework:
-    print(check_legal_state(v))
+    if check_legal_state(v) == False: legal_game = False
+
+  if legal_game == True: print("Legal to play")
+  elif legal_game == False: print("Illegal you tithead")
 
   return framework
 
-grounded_framework = prefered_initial_labellings(list_of_objects)
+# Saves Pickles to the pickle folder
+def save_framework(name, framework):
+  with open("pickles/" + name + '.pickle', 'wb') as handle:
+    pickle.dump(framework, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Loads Pickles to the argument game
+def load_frameowrk(name): 
+  with open("pickles/" + name + '.pickle', 'rb') as handle:
+    b = pickle.load(handle)
+  return b 
+
 
 # TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
 
+# Gametree logic
+def deploy_gametree(framework, selected_argument):
+  for x in framework:
+    starting_argument = None
+    if x.name == selected_argument:
+        print("\n\nNew Section")
+        print("i found it!")
+        starting_argument = x
+        break
+    
+
+
+  return starting_argument
+
+
+def search_tree(framework, starting_argument):
+
+  list_of_pairs = []
+
+  print("Beginning argument", starting_argument.name)
+
+  if len(starting_argument.attacked_by) > 0:
+    print("\nLayer 1: ")
+    for x in starting_argument.attacked_by:
+      print(starting_argument.name, "is attacked by", x.name)
+      # Lists pairs together to then ensure repeats don't occur
+      list_of_pairs.append([x.name, starting_argument.name])
+
+      if len(x.attacked_by) > 0:
+
+        print("\nLayer 2:")
+        for y in x.attacked_by:
+
+          if [y.name ,x.name] not in list_of_pairs:
+            print(x.name, "is attacked by", y.name)
+            list_of_pairs.append([y.name, x.name])
+          else: print("Duplicate")
+
+          if len(y.attacked_by) > 0:
+            print("\nLayer 3:")
+            for z in y.attacked_by:
+              if [z.name ,y.name] not in list_of_pairs:
+                print(y.name, "is attacked by", z.name)
+                #print("Layer 3, selected argument:", z.name)
+                list_of_pairs.append([z.name, y.name])
+              else: break
+
+              if len(z.attacked_by) > 0:
+                print("\nLayer 4:")
+                for a in z.attacked_by:
+                  if [a.name ,z.name] not in list_of_pairs:
+                    print(z.name, "is attacked by", a.name)
+                    list_of_pairs.append([a.name, z.name])
+                
+                if len(a.attacked_by) > 0:
+                  print("\nLayer 5:")
+                  # print("Layer 4, selected argument:", a.name)
+                  for b in a.attacked_by:
+                    if [b.name ,a.name] not in list_of_pairs:
+                      print(a.name, "is attacked by", b.name)
+                      list_of_pairs.append([b.name, a.name])
+                else: break
+          else: print("Terminate")      
+  else: print("Terminate")
+  print(list_of_pairs)
+
+# Initialises Framework with variable of arguments set by user
+list_of_objects = create_framework(3)
+grounded_framework = prefered_initial_labellings(list_of_objects)
+bangbang = deploy_gametree(grounded_framework, "a")
+
+for x in grounded_framework:
+  attack_list = []
+  for y in x.attacked_by:
+    attack_list.append(y.name)
+  print (x.name, "is attacked by", attack_list)
+
+
+search_tree(grounded_framework, bangbang)
+
 '''
-TODO Grounded Rules
-IN For all unattacked arguments
-OUT to any argument that is attacked and just made IN
-IN to all who are attacked by only OUTS
-ANY Remaining arguments are deemed UNDEC
+TODO Go over the rules and function to ensure logic makes sense
 
 TODO Game tree function that constructs the gametree for all possible outcomes from playing that game
 The OPP can reference the gametree to decide its next move
