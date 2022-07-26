@@ -60,7 +60,7 @@ def create_game_tree(framework, initial_argument):
       for y in x.attacked_by:
         attack_list.append([x.name, y.name])
         print (x.name, "is attacked by", y.name)
-  print(attack_list, "\n")
+  print("\n", attack_list, "\n")
 
   # Matches are the pairs in attack list that have the same first value as initial argument
   # E.g. if a is initial argument and there was a pair [a,b] it would extract that pair and remove from the attack list so it can't be used again
