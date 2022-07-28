@@ -39,7 +39,7 @@ def check_legal_state(label):
       print(label.name, "is illegally UNDEC")
 
   return illegal
- 
+
 def grounded_initial_labellings(framework):
 
   list_of_states = ["Some Things"]

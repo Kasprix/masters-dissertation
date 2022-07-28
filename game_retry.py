@@ -42,10 +42,6 @@ while True:
 
 listed = create_game_tree(grounded_framework, starting_argument)
 
-print(listed)
-
-
-
 
 for x in listed:
   if len(x) % 2 == 0: cpu_winning_tree.append(x)
@@ -54,6 +50,8 @@ for x in listed:
 
 print("\nPLAYER WIN ROUTES: ", len(player_winning_tree) ,player_winning_tree)
 print("CPU WIN ROUTES: ", len(cpu_winning_tree) , cpu_winning_tree, "\n")
+
+print(listed)
 
 
 # --------------------BEGIN GAME----------------------
@@ -69,7 +67,7 @@ active_game = True
 grounded = True
 prefered = False
 
-paths = []
+path_counters = []
 
 # TODO remove all played moves, keep remaining moves for each player, CAN, get all other users moves to see if there's an additional move to make
 # GET ALL PLAYER AND CPU PATHS, IF LISTED STILL EXISTS, REMOVE ALL DUPLICATES FROM LIST
@@ -82,7 +80,6 @@ while(active_game):
   except IndexError:
     print("High Level No More Moves")
     break
-
 
   # Adds starting argument to game path
   if move_count == 0:
@@ -98,7 +95,7 @@ while(active_game):
     print("CPU TURN:\n")
 
     try:
-      possible_moves = [x for x in listed if x[move_count] == current_argument and move_count < len(x)]
+      possible_moves = [x for x in listed if x[move_count] == current_argument and move_count < len(x) and x[-1] != current_argument]
 
     except IndexError:
       print("CPU Moves indent break")
@@ -109,12 +106,17 @@ while(active_game):
     # List of winning strategies for the CPU
     prefered_cpu_options = [x for x in cpu_winning_tree if x[move_count] == current_argument and move_count < len(x)]
 
+    # print("Winning Options", prefered_cpu_options)
+    # print("Possible Options", possible_moves)
+
+    # Follows the inverse of the rule for the CPU (function is from the perspective of player so cpu will do opposite of grounded and prefered rules)
+    # alternative_path = alternative_options(alternative_path, game_path, cpu_moves, not grounded, not prefered)
+
 
     if len(prefered_cpu_options) > 0:
       # print("Prefered choice")
       best_move = min(prefered_cpu_options, key=len)
       current_argument = best_move[move_count+1]
-      move_count += 1
 
     elif len(possible_moves) > 0:
       # print("Possible moves > 0: ", possible_moves)
@@ -133,7 +135,6 @@ while(active_game):
         # print("Next move options", next_move_options)
         # print("Random choice type")
         current_argument = random.choice(next_move_options)
-        move_count += 1
 
       else: active_game = False
 
@@ -147,19 +148,15 @@ while(active_game):
     print("CPU MOVES:", current_argument)
     game_path.append(current_argument)
 
+
     if game_path in listed:
-      print(game_path, "Game path", "is in listed")
-      paths.append(game_path)
       listed.remove(game_path)
-
-      game_path = []
-      # makes checking for alternatives on the list at point [0] for player as that's next move
-      move_count = 0
-
+      print(game_path, "Game path", "is in listed")
+      print("Paths remaining", listed)
 
     cpu_moves.append(current_argument)
 
-    
+    move_count += 1
     player_move = True
 
 
@@ -215,26 +212,22 @@ while(active_game):
                 player_moves.append(current_argument)
 
                 print("Player has chosen:", current_argument)
-                move_count +=1
                 player_move = False
                 break
       else: 
         print("Next Move Break")
+
+
     else:
+      print("All Moves:", alternative_path)
       print("No poss moves")
       active_game = False
-
+      
     if game_path in listed:
-      print(game_path, "Game path", "is in listed")
-      paths.append(game_path)
       listed.remove(game_path)
+      print(game_path, "Game path", "is in listed")
 
-      game_path = []
-
-      # makes checking for alternatives on the list at point [1] for CPU as that's next move
-      move_count = 1
-
-    
+    move_count +=1
     player_move = False
 
 
@@ -245,7 +238,6 @@ print("\nGame Path:", game_path)
 print("Listed:", listed)
 print("Player Path:", player_moves)
 print("CPU Path:", cpu_moves)
-print("All Paths:", paths)
 
 
 '''
