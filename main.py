@@ -6,7 +6,6 @@ import itertools
 
 from argument_functions import prefered_initial_labellings
 from framework_and_tree import create_framework, create_game_tree
-from test import alternative_options
 
 
 player_winning_tree = []
