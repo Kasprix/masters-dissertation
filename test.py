@@ -3,9 +3,6 @@
 prefered = False
 grounded = True
 
-
-
-
 def alternative_options(list_of_list_of_moves, game_path, path, grounded, prefered):
 
     # Inverse would work for the CPU
