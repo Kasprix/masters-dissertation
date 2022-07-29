@@ -1,3 +1,4 @@
+import copy
 from functools import reduce
 import random
 import string
@@ -87,13 +88,6 @@ paths = []
 
 while(active_game):
 
-  try:
-    possible_moves = [x for x in listed if x[move_count] == current_argument]
-
-  except IndexError:
-    print("High Level No More Moves")
-    break
-
 
   # Adds starting argument to game path
   if move_count == 0:
@@ -178,15 +172,16 @@ while(active_game):
 
       # Does this to find next argument for player
 
-      for i in reversed(cpu_moves):
+      for i in reversed(copy.deepcopy(cpu_moves)):
         for list in listed:
-          if i in list and len(list) <= len(game_path):
+          if i in list and len(list):
             index = list.index(i)
-            if index % 2 == 0:
+            if index % 2 == 1:
               current_argument = i
               move_count = index
               print("Found alternative at point", move_count, "for argument:", current_argument)
-              game_path = game_path[:move_count+2]
+
+              game_path = game_path[:move_count+1]
               break
 
 
@@ -217,7 +212,7 @@ while(active_game):
 
 
     except IndexError:
-      # print("No more possible moves for player")
+      print("No more possible moves for player")
       active_game = False
       break
 
@@ -270,16 +265,18 @@ while(active_game):
       game_path = []
 
       # Does this to find next argument for player
-      for i in reversed(player_moves.pop(0)):
+      first_arg_trunc = copy.deepcopy(player_moves)
+      first_arg_trunc.remove(starting_argument)
+
+      for i in reversed(first_arg_trunc):
         for list in listed:
-          if i in list and len(list) <= len(game_path):
+          if i in list and len(list):
             index = list.index(i)
-            if index % 2 == 1:
+            if index % 2 == 0:
               current_argument = i
               move_count = index
               print("Found alternative at point", move_count, "for argument:", current_argument)
-              game_path = game_path[:move_count+2]
-              breakth = game_path[:move_count+2]
+              game_path = game_path[:move_count+1]
               break
 
 
