@@ -26,5 +26,6 @@ class Agent:
 
 # Creates the agent object by passing through the name (allows to incrementally create objects and name them from the alphabet)
 def create_agent(agent_name):
+  
   agent_object = Agent(agent_name)
   return agent_object
