@@ -151,6 +151,6 @@ def prefered_initial_labellings(framework):
     if check_legal_state(v) == False: legal_game = False
 
   if legal_game == True: print("Legal to play")
-  elif legal_game == False: print("Illegal you tithead")
+  elif legal_game == False: print("Illegal")
 
   return framework

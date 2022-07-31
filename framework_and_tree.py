@@ -35,6 +35,7 @@ def create_framework(variable):
       if random.randint(0,9) < 6:
         arguments_excluding_value = [x for x in arguments_excluding_value if x != victim]
         otherVictim = random.choice(arguments_excluding_value)
+        print(str(names.name), "Attacks", otherVictim.name)
         names.attack_agent(otherVictim)
     else:
       # No attacks are made
@@ -54,8 +55,6 @@ def create_game_tree(framework, initial_argument, semantic):
   elif semantic =='g':
     grounded = True
 
-
-
   # Stores the incremental new arguments that are found
   new_argument = []
   list_of_lists = []
@@ -65,7 +64,7 @@ def create_game_tree(framework, initial_argument, semantic):
   # Gathers all the pairs of attacks and if attacked by none then returns a "" pair
   for x in framework:
     if len(x.attacked_by) == 0:
-      attack_list.append([x.name, ""])
+      attack_list.append([x.name])
     else:
       for y in x.attacked_by:
         attack_list.append([x.name, y.name])
@@ -74,7 +73,7 @@ def create_game_tree(framework, initial_argument, semantic):
 
   # Matches are the pairs in attack list that have the same first value as initial argument
   # E.g. if a is initial argument and there was a pair [a,b] it would extract that pair and remove from the attack list so it can't be used again
-  matches = [x for x in attack_list if x[0] == initial_argument]
+  matches = [x for x in attack_list if x[0] == initial_argument and len(x) > 1]
 
   # Print all matches that start with initial argument
   print("Matches:", matches, "\n")
@@ -105,87 +104,139 @@ def create_game_tree(framework, initial_argument, semantic):
 
   round_count = 1
 
+  while len(new_argument) != 0:
 
-  #while len(new_argument) != 0:
+      new_argues = []
+      count = 1
 
-  new_argues = []
-  count = 1
-
-  print("\nROUND COUNT:", round_count)
-  
-  for x in new_argument:
-
-    print("\nITERATION", count, "\n")
-    print("Name", x)
-
-    # All argument pairs that start with selected argument
-    matches = [y for y in attack_list if y[0] == x]
-    
-    # Temp comment to allow for using same argument multiple times
-    # attack_list = [x for x in attack_list if x not in matches]
-
-    if not matches:
-      print("Skipped, no match")
-      print("List of lists:", list_of_lists)
-      count += 1
-    else:
-
-      # List of new pairs
-      listy = []
-
-      # Print all matches that start with initial argument
-      print("Matches:", matches, "\n")
-
-      '''
-      for match in matches:
-        print("Individual match", match)
-      '''
-
-      # Searches list of lists for arguments that attack x (If x is first in pair it means it is attacked by the second value ['a'],['b'] == A is attacked by B)      
-      advance_path = [g for g in list_of_lists if g[-1] == x]
-
-      print("TEST SEARCH:", advance_path[0])
-
-      for i in range(len(matches)):
-
-        # print("Test", value)
-        print("Before", advance_path[0])
-        advance_path[0].insert(len(advance_path[0]), matches[i][1])
-        print("After", advance_path[0])
-
-        # print("Checker", advance_path[0])
-        print("Before 1", listy)
-        listy.append(advance_path[0].copy())
-        print("After 1", listy)
-
-        # Removes the new entry to allow for the next entry to enter
-        advance_path[0].pop()
-
-        new_argues.append(matches[i][1])
-
-      pruned = [h for h in listy if h[-2] == x]
+      print("\nROUND COUNT:", round_count)
       
-      print("Pruned", pruned)
-      list_of_lists = list_of_lists + pruned
-      list_of_lists.remove(advance_path[0])
-      print("List of lists:", list_of_lists)
+      for x in new_argument:
 
-      count += 1
+        print("\nITERATION", count, "\n")
+        print("Name", x)
 
-    new_argument = new_argues
-  round_count += 1
+        # All argument pairs that start with selected argument
+        matches = [y for y in attack_list if y[0] == x and len(y) > 1]
+        
+        # Temp comment to allow for using same argument multiple times
+        # attack_list = [x for x in attack_list if x not in matches]
 
-  print("NEXT ROUND OF ARGUES", new_argument)
-  print("Remaining Arguments:", attack_list)
+        if not matches:
+          print("Skipped, no match")
+          print("List of lists:", list_of_lists)
+          count += 1
+        else:
+
+          # List of new pairs
+          listy = []
+
+          # Print all matches that start with initial argument
+          print("Matches:", matches, "\n")
+
+          '''
+          for match in matches:
+            print("Individual match", match)
+          '''
+
+          # Searches list of lists for arguments that attack x (If x is first in pair it means it is attacked by the second value ['a'],['b'] == A is attacked by B)    
+          
+          advance_path = [g for g in list_of_lists if g[-1] == x]
+
+          if len(advance_path) > 0:
+            print("ADV PATH", advance_path) 
+            print("TEST SEARCH:", advance_path[0])
+
+            for i in range(len(matches)):
+
+              # print("Test", value)
+              print("Before", advance_path[0])
+              advance_path[0].insert(len(advance_path[0]), matches[i][1])
+              print("After", advance_path[0])
+
+
+              # Looks at value to see if it would be valid under the selected semantics
+              # odd values, player moves. even values, CPU moves
+              if grounded:
+                valid_move = True
+                list_odd = advance_path[0][::2] # Elements from list1 starting from 0 iterating by 2
+                for x in list_odd:
+                  if list_odd.count(x) > 1:
+                    valid_move = False
+                    break
+
+                if valid_move:
+                  # print("Checker", advance_path[0])
+                  print("Before 1", listy)
+                  listy.append(advance_path[0].copy())
+                  print("After 1", listy)
+
+                  # Removes the new entry to allow for the next entry to enter
+                  advance_path[0].pop()
+
+                  if matches[i][1] != '':
+                    new_argues.append(matches[i][1])
+                  
+                else: 
+                  advance_path[0].pop()
+                  print("Incorrect path found")
+                  next
+
+                
+              
+              elif prefered:
+                valid_move = True
+                list_odd = advance_path[0][1::2] # Elements from list1 starting from 0 iterating by 2
+                for x in list_odd:
+                  if list_odd.count(x) > 1:
+                    valid_move = False
+                    break
+                  
+                if valid_move:
+                  # print("Checker", advance_path[0])
+                  print("Before 1", listy)
+                  listy.append(advance_path[0].copy())
+                  print("After 1", listy)
+
+                  # Removes the new entry to allow for the next entry to enter
+                  advance_path[0].pop()
+                  
+                  if matches[i][1] != '':
+                    new_argues.append(matches[i][1])
+                else: 
+                  advance_path[0].pop()
+                  print("Incorrect path found")
+                  next
 
 
 
-# Removes '' at end of list
-  for x in list_of_lists:
-    if x[-1] == '':
-      x.remove('')
-  return list_of_lists
+            pruned = [h for h in listy if h[-2] == x]
+          
+          print("Pruned", pruned)
 
+          if len(listy) > 0:
+            list_of_lists = list_of_lists + listy
+            list_of_lists.remove(advance_path[0])
+          print("List of lists:", list_of_lists)
+
+          count += 1
+
+        new_argument = [x for x in new_argues if x != '']
+      round_count += 1
+
+      print("NEXT ROUND OF ARGUES", new_argument)
+      print("Remaining Arguments:", attack_list)
+      print("Current Tree:", list_of_lists)
+
+
+'''
+  # Removes '' at end of list
+    for x in list_of_lists:
+      if x[-1] == '':
+        x.remove('')
+    return list_of_lists
+'''
+    
 
 '''
 while True:
@@ -198,6 +249,6 @@ while True:
 '''
         
 # 8 for testing
-list_of_objects = create_framework(8)
+list_of_objects = create_framework(3)
 
 create_game_tree(list_of_objects, 'b', 'p')
