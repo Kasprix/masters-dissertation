@@ -1,13 +1,14 @@
 
+import os
 import networkx as nx
 import matplotlib.pyplot as plt
-
-G = nx.DiGraph()
-
 from framework_and_tree import create_framework
 
 
+
 def display_framework_tree(framework):
+
+  G = nx.DiGraph()
 
   attack_list = []
 
@@ -32,6 +33,7 @@ def display_framework_tree(framework):
 
 
   # Need to create a layout when doing
+
   # separate calls to draw nodes and edges
   pos = nx.spring_layout(G, scale = 2)
   nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 300)
@@ -39,4 +41,14 @@ def display_framework_tree(framework):
   nx.draw_networkx_labels(G, pos)
   nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=True)
 
-  plt.show()
+  # Update
+  plt.savefig("graphs/Graph.png", format="PNG")
+  plt.clf()
+
+
+
+# Example
+
+'''test = create_framework(8)
+
+display_framework_tree(test)'''

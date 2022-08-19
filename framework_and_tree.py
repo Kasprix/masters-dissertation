@@ -45,15 +45,17 @@ def create_framework(variable):
 
 # TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
 
-def create_game_tree(framework, initial_argument, semantic):
+def create_game_tree(framework, initial_argument):
 
   grounded = False
   prefered = False
 
+  '''
   if semantic == 'p':
     prefered = True
   elif semantic =='g':
     grounded = True
+  '''
 
   # Stores the incremental new arguments that are found
   new_argument = []
@@ -168,6 +170,7 @@ def create_game_tree(framework, initial_argument, semantic):
                 if valid_move:
                   # print("Checker", advance_path[0])
                   print("Before 1", listy)
+                  # Adds to new list before popping entry
                   listy.append(advance_path[0].copy())
                   print("After 1", listy)
 
@@ -229,13 +232,13 @@ def create_game_tree(framework, initial_argument, semantic):
       print("Current Tree:", list_of_lists)
 
 
-'''
-  # Removes '' at end of list
-    for x in list_of_lists:
-      if x[-1] == '':
-        x.remove('')
-    return list_of_lists
-'''
+
+# Removes '' at end of list
+  for x in list_of_lists:
+    if x[-1] == '':
+      x.remove('')
+  return list_of_lists
+
     
 
 '''
@@ -249,6 +252,6 @@ while True:
 '''
         
 # 8 for testing
-list_of_objects = create_framework(3)
+'''list_of_objects = create_framework(3)
 
-create_game_tree(list_of_objects, 'b', 'p')
+create_game_tree(list_of_objects, 'b', 'p')'''

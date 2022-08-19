@@ -17,7 +17,6 @@ prefered = False
 active_game = True
 
 
-
 while True:
     number_of_arguments = int(input("Select number of arguments to play with (Max 20):"))
     if number_of_arguments > 20:
@@ -82,7 +81,6 @@ active_game = True
 
 paths = []
 
-# TODO remove all played moves, keep remaining moves for each player, CAN, get all other users moves to see if there's an additional move to make
 # GET ALL PLAYER AND CPU PATHS, IF LISTED STILL EXISTS, REMOVE ALL DUPLICATES FROM LIST
 
 while(active_game):
