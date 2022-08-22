@@ -17,34 +17,9 @@ prefered = False
 active_game = True
 
 
-while True:
-    number_of_arguments = int(input("Select number of arguments to play with (Max 20):"))
-    if number_of_arguments > 20:
-      print("Not an appropriate choice.")
-    else:
-      break
-        
-# Initialises Framework with variable of arguments set by user
-list_of_objects = create_framework(int(number_of_arguments))
-grounded_framework = prefered_initial_labellings(list_of_objects)
+starting_argument = 'b'
 
 
-options = list(string.ascii_lowercase[:int(number_of_arguments)])
-print("Argument options to start with:", str(options), "\n")
-
-
-# Ensures user picks valid option
-while True:
-    starting_argument = input("Input argument to play with: ")
-    if starting_argument.lower() not in options:
-        print("Not an appropriate choice.")
-    else:
-        break
-
-
-listed = create_game_tree(grounded_framework, starting_argument)
-
-print(listed)
 
 # Ensures user picks valid option
 while True:
@@ -56,6 +31,11 @@ while True:
       prefered = True
       break
     else: print("Not an appropriate choice.")
+
+
+listed = create_game_tree(create_framework(7), starting_argument, game_type)
+
+print(listed)
 
 
 for x in listed:
@@ -150,7 +130,7 @@ while(active_game):
       else: active_game = False
 
     else:
-      print("CPU ENDED")
+      print("CPU LOSES")
       print("No more moves")
       active_game = False
       break
@@ -180,12 +160,6 @@ while(active_game):
 
               game_path = game_path[:move_count+1]
               break
-
-
-
-
-
-    
 
     
     player_move = True

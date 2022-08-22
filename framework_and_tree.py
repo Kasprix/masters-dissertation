@@ -45,17 +45,17 @@ def create_framework(variable):
 
 # TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
 
-def create_game_tree(framework, initial_argument):
+def create_game_tree(framework, initial_argument, semantic):
 
   grounded = False
   prefered = False
 
-  '''
+
   if semantic == 'p':
     prefered = True
   elif semantic =='g':
     grounded = True
-  '''
+
 
   # Stores the incremental new arguments that are found
   new_argument = []
