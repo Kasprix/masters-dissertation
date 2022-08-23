@@ -222,7 +222,19 @@ tk.Label(RIGHT_LEFT, text="ENTER NEXT MOVE:").grid(column=3, sticky="nsew", padx
 next_move_entry = tk.Entry(RIGHT_LEFT)
 next_move_entry.grid(column=3, sticky="nsew", padx=5, pady=5)
 
-tk.Button(RIGHT_LEFT, text='MAKE MOVE', command=get_next_move_entry).grid(column=3, sticky="nsew", padx=5, pady=5)
+move_button = tk.Button(RIGHT_LEFT, text='MAKE MOVE', command=get_next_move_entry).grid(column=3, sticky="nsew", padx=5, pady=5)
+
+game_path = tk.StringVar()
+game_path.set("GAME PATH:")
+
+tk.Label(RIGHT_LEFT, textvariable=game_path).grid(column=3, sticky="nsew", padx=5, pady=5)
+
+
+tk.Button(RIGHT_LEFT, text='HINT', ).grid(column=3, sticky="nsew", padx=5, pady=5)
+tk.Label(RIGHT_LEFT, textvariable="POO").grid(column=3, sticky="nsew", padx=5, pady=5)
+
+
+
 
 
 tk.mainloop()

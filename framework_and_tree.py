@@ -52,8 +52,11 @@ def create_game_tree(framework, initial_argument, semantic):
 
 
   if semantic == 'p':
+    print("Prefered Game Type")
     prefered = True
   elif semantic =='g':
+    print("Grounded Game Type")
+
     grounded = True
 
 

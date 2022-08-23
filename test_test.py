@@ -23,7 +23,7 @@ active_game = True
 starting_argument = 'b'
 
 
-listed = create_game_tree(create_framework(3), starting_argument, "p")
+listed = create_game_tree(create_framework(7), starting_argument, "p")
 
 print(listed)
 
@@ -307,6 +307,7 @@ while (active_game):
 
                         move_count = temp_move_count + 1 
                         game_path.append(current_argument)
+
                         player_move = False
 
                         print("New game path is :", temp_move_count)
@@ -329,3 +330,4 @@ print("Listed:", listed)
 print("Player Path:", player_moves)
 print("CPU Path:", cpu_moves)
 print("All Paths:", paths)
+
