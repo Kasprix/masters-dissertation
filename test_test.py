@@ -3,9 +3,12 @@ from functools import reduce
 import random
 import string
 import itertools
+from operator import itemgetter
+
 
 from argument_functions import prefered_initial_labellings
 from framework_and_tree import create_framework, create_game_tree
+from save_load import load_frameowrk
 
 
 player_winning_tree = []
@@ -22,17 +25,19 @@ active_game = True
 
 starting_argument = 'b'
 
+framework = load_frameowrk('5')
 
-listed = create_game_tree(create_framework(7), starting_argument, "p")
+listed = create_game_tree(framework, starting_argument, "p")
+
 
 print(listed)
 
 
 for x in listed:
-    if len(x) % 2 == 0:
-        cpu_winning_tree.append(x)
-    elif len(x) % 2 == 1:
-        player_winning_tree.append(x)
+  if len(x) % 2 == 0:
+    cpu_winning_tree.append(x)
+  elif len(x) % 2 == 1:
+    player_winning_tree.append(x)
 
 
 print("\nPLAYER WIN ROUTES: ", len(player_winning_tree), player_winning_tree)
@@ -50,276 +55,243 @@ player_move = False
 current_argument = starting_argument
 active_game = True
 
-PLAYER_WIN = False
-CPU_WIN = False
-
 
 paths = []
-
-
-
 
 # GET ALL PLAYER AND CPU PATHS, IF LISTED STILL EXISTS, REMOVE ALL DUPLICATES FROM LIST
 
 while (active_game):
 
-    # Adds starting argument to game path
-    if move_count == 0:
-        game_path.append(current_argument)
-        player_moves.append(current_argument)
-        print("\nFirst Selection:", current_argument)
+  # Adds starting argument to game path
+  if move_count == 0:
+    game_path.append(current_argument)
+    player_moves.append(current_argument)
+    print("\nFirst Selection:", current_argument)
+  else:
+    print("\nLast Selection:", current_argument)
+
+  while player_move is False:
+
+    print("CPU TURN:\n")
+
+    try:
+      if grounded:
+        possible_moves = []
+        print(listed)
+        for x in listed:
+            if x[0:move_count+1] == game_path:
+                possible_moves.append(x)
+
+      if prefered:
+        possible_moves = []
+        print(listed)
+        for x in listed:
+            if x[0:move_count+1] == game_path and x[move_count+1] not in player_moves:
+                possible_moves.append(x)
+
+    except IndexError:
+      print("CPU Moves indent break")
+      break
+
+    next_move_options = []
+
+    print("Possible moves:", possible_moves)
+
+    # List of winning strategies for the CPU
+    prefered_cpu_options = [
+        x for x in cpu_winning_tree if x[move_count] == current_argument and move_count < len(x)]
+
+    if len(prefered_cpu_options) > 0:
+      # print("Prefered choice")
+      best_move = min(prefered_cpu_options, key=len)
+      current_argument = best_move[move_count+1]
+      cpu_moves.append(current_argument)
+      move_count += 1
+
+    elif len(possible_moves) > 0:
+      # print("Possible moves > 0: ", possible_moves)
+      for x in possible_moves:
+
+        if x[0:move_count+1] == game_path:
+            next_move_options.append(x[move_count+1])
+
+        current_index = x.index(current_argument)
+        print("POSSIBLE MOVES")
+        print("Current Index", current_index)
+        print("Current Argument", current_argument)
+
+      if len(next_move_options) != 0:
+        # print("Next move options", next_move_options)
+        print("CPU Options:", next_move_options)
+        print("Random choice type")
+        current_argument = random.choice(next_move_options)
+        cpu_moves.append(current_argument)
+        move_count += 1
+
+      else:
+        active_game = False
+
     else:
-        print("\nLast Selection:", current_argument)
+      print("CPU LOSES")
+      print("No more moves")
+      active_game = False
+      break
 
+    print("CPU MOVES:", current_argument)
+    game_path.append(current_argument)
 
+    if game_path in listed:
+      print(game_path, "Game path", "is in listed")
+      paths.append(game_path)
+      listed.remove(game_path)
 
-    while player_move is False:
+      # makes checking for alternatives on the list at point [0] for player as that's next move
+      # move_count = 0
 
-        print("CPU TURN:\n")
-        print("CURRENT MOVE COUNT:\n", move_count)
+      # Does this to find next argument for player
 
+      for i in reversed(copy.deepcopy(cpu_moves)):
 
-        next_move_options = []
+        for list in listed:
+          if i in list and len(list):
+            index = list.index(i)
+            if index % 2 == 1:
+              current_argument = i
+              move_count = index
+              print("Found alternative at point", move_count,
+                    "for argument:", current_argument)
 
-        if move_count == 0:
-            possible_moves = [x for x in listed if x[move_count] == current_argument]
-        else:
-            possible_moves = [x for x in listed if x[0:len(game_path)] == game_path]
+              game_path = game_path[:move_count+1]
+              break
 
-        print("POSS MOVES", possible_moves)
+    player_move = True
 
+    print("New Path", game_path)
 
 
-        if game_path in listed:
-            print(game_path, "Game path", "is in listed")
 
-            paths.append(copy.deepcopy(game_path))
-            listed.remove(copy.deepcopy(game_path))
 
-            game_path.pop()
-            game_path.pop()
 
-            print("SEARCH LIST: ", game_path)
-
-            iterable_search_list = []
-
-            for x in listed:
-                if x[0:len(game_path)] == game_path and (len(x) % 2 == 0): 
-                    print("iterable success", x[0:len(game_path)])
-                    print("Appending", x)
-                    iterable_search_list.append(x)
-
-
-            # makes checking for alternatives on the list at point [0] for player as that's next move
-            # move_count = 0
-
-            # Does this to find next argument for player
-            # Dictionary to store alternatives
-            alternative_options = []
-            temp_move_count = move_count
-
-
-            for list in iterable_search_list:
-
-                try:
-                    alternative_options.append(list[len(game_path)+1])
-                    temp_move_count = len(game_path)+1
-                    print("success")
-                    print(list[len(game_path)])
-                except IndexError:
-                    print("FAAAAILLL", list[:len(game_path)])
-                    gotdata = 'null'
-
-
-            if len(alternative_options) == 0:
-                print("No Options At All, CPU loses")
-                active_game = False
-                break
-            else:
-                new_argument = random.choice(alternative_options)	
-                current_argument = new_argument
-                move_count = temp_move_count
-
-        elif len(possible_moves) > 0:
-            # print("Possible moves > 0: ", possible_moves)
-            for x in possible_moves:
-                # reverse
-                current_index = len(game_path)
-                try:
-
-                    if x[len(game_path)] == x[current_index]:
-
-                        # Gets next argument that comes after current argument
-                        print("CURRENT INDEX", current_index)
-                        print("CPU NEXT MOVE OPTIONS", x[current_index])
-                        next_move_options.append(x[current_index])
-                    else: print("wahah")
-
-                except IndexError:
-                    print("Next Argument doesn't exist for this option",
-                          current_argument)
-                    continue
-
-            if len(next_move_options) != 0:
-                # print("Next move options", next_move_options)
-                print("Random choice type")
-                current_argument = random.choice(next_move_options)
-                cpu_moves.append(current_argument)
-                move_count += 1
-
-            else:
-                active_game = False
-        else:
-            print("CPU LOSES")
-            print("No more moves")
-            active_game = False
-            break
-
-        print("CPU MOVES:", current_argument)
-        game_path.append(current_argument)
-        print("GAME PATH:", game_path)
-
-
-
-
-
-
-        player_move = True
-
-
-
-
-    while player_move is True:
-
-        print("\nPLAYER TURN (Move Count):", move_count, "\n")
-
-
-        alternative_options = []
-
-
-
-        if game_path in listed:
-            print(game_path, "Game path", "is in listed")
-
-            paths.append(copy.deepcopy(game_path))
-            listed.remove(copy.deepcopy(game_path))
-
-            game_path.pop()
-            game_path.pop()
-
-
-            print("SEARCH LIST: ", game_path)
-
-            iterable_search_list = []
-
-            for x in listed:
-                # reverse
-                current_index = len(game_path)
-                try:
-
-                    if x[len(game_path)] == x[current_index]:
-
-                        # Gets next argument that comes after current argument
-                        print("CURRENT INDEX", current_index)
-                        print("CPU NEXT MOVE OPTIONS", x[current_index])
-                        alternative_options.append(x[current_index])
-                    else: print("wahah")
-
-                except IndexError:
-                    print("Next Argument doesn't exist for this option", current_argument)
-                    continue     
-
-
-            if len(alternative_options) == 0:
-                print("No Options At All, PLAYER loses")
-                active_game = False
-                break
-
-
-        next_move_options = []
-
-        print("Current Move", current_argument)
-
-
-
-        try:
-            possible_moves = [x for x in listed if x[0:len(game_path)] == game_path]
-
-        except IndexError:
-            print("No more possible moves for player in this line of arguing")
     
 
-        print("Possible moves:", possible_moves)
-        print("Listed:", listed)
-        print("GAME PATH:", game_path)
+  while player_move is True:
 
+    print("\nPLAYER TURN (Move Count):", move_count, "\n")
 
+    next_move_options = []
 
-        # Go possible moves fist then elif for other options then else no more moves
-        if len(possible_moves) > 0:
+    print("Current Move", current_argument)
 
-            for x in possible_moves:
-                current_index = x[::-1].index(current_argument)
-                try:
-                    next_move = x[len(game_path)]
-                    if next_move not in next_move_options:
-                        print(next_move)
-                        next_move_options.append(next_move)
-                except IndexError:
-                    print("Last Option for this one")
-                    continue
+    print("Move Count:", move_count)
+    print("Current Argument", current_argument)
 
-            print("Next move options", next_move_options)
+    try:
+      if prefered:
+        possible_moves = []
+        print(listed)
+        for x in listed:
+            if x[0:move_count+1] == game_path:
+                possible_moves.append(x)
 
-            if len(next_move_options) != 0:
-                while True:
+      if grounded:
+        possible_moves = []
+        print(listed)
+        for x in listed:
+            if x[0:move_count+1] == game_path and x[move_count+1] not in player_moves:
+                possible_moves.append(x)
 
-                    current_argument = input("Player, select your next move: ").lower()
+    except IndexError:
+      print("No more possible moves for player")
+      active_game = False
+      break
 
-                    if current_argument.lower() not in next_move_options:
-                        print("Not an appropriate choice.")
-                    else:
-                        game_path.append(current_argument)
-                        player_moves.append(current_argument)
+    print("Listed:", listed)
+    print("Possible moves:", possible_moves)
 
-                        print("Player has chosen:", current_argument)
-                        move_count += 1
-                        player_move = False
-                        break
+    print("Game Path:", game_path)
+
+    # Go possible moves fist then elif for other options then else no more moves
+    if len(possible_moves) > 0:
+
+      for x in possible_moves:
+        current_index = x.index(current_argument)
+        try:
+          next_move = x[current_index+1]
+          if next_move not in next_move_options:
+            next_move_options.append(next_move)
+        except IndexError:
+          print("Last Option for this one")
+          continue
+
+      print("Next move options", next_move_options)
+
+      if len(next_move_options) != 0:
+        while True:
+
+            current_argument = input("Player, select your next move: ")
+
+            if current_argument.lower() not in next_move_options:
+                print("Not an appropriate choice.")
             else:
-                print("Next Move Break")
-        
-        elif len(alternative_options) != 0:
+                game_path.append(current_argument)
+                player_moves.append(current_argument)
 
-            while True:
-                    print("ALT ROUTE")
+                print("Player has chosen:", current_argument)
+                move_count += 1
+                player_move = False
+                break
+      else:
+        print("Next Move Break")
+    else:
+      print("No poss moves")
+      active_game = False
 
-                    current_argument = input("Player, select your next move: ").lower()
+    if game_path in listed:
+      print(game_path, "Game path", "is in listed")
+      print("Player Moves:", player_moves)
+      paths.append(game_path)
+      listed.remove(game_path)
 
-                    if current_argument.lower() is not alternative_options:
-                        print("Not an appropriate choice.")
-                    else:
-                        player_moves.append(current_argument)
+      # Does this to find next argument for player
+      first_arg_trunc = [i for i, j in zip(player_moves, game_path) if i == j]
+      alt_moves_list = {}
 
-                        print("Player has chosen:", current_argument)
-                        print("New Move Count is :", temp_move_count)
-                        
+      path_search = len(game_path)-2
 
-                        move_count = temp_move_count + 1 
-                        game_path.append(current_argument)
+      found_alterative = False
+      list_of_alternatives = []
 
-                        player_move = False
+      while path_search >= 0 or found_alterative == True:
 
-                        print("New game path is :", temp_move_count)
-                        break
+        for list in listed:
+            print("Search")
+            if game_path[0:path_search] == list[0:path_search]:
+                print("MATCH")
+                list_of_alternatives.append(list[0:path_search])
+                print("New path", list[0:path_search])
+                found_alterative == True
+
+        path_search -= 2
 
 
-        else:
-            print("No poss moves")
-            active_game = False
+      chosen_path = max(list_of_alternatives, key=len)
 
+      current_argument = chosen_path[-1]
+      move_count = len(chosen_path)-1
 
-        player_move = False
+      game_path = game_path[:move_count+1]
+
+      print("Selected Move:", current_argument)
+      print("Selected Point:", move_count)
+      print("Game Path", game_path)
+
+      # makes checking for alternatives on the list at point [1] for CPU as that's next move, issue cause current argument isn't changed
+      # Take opps args, find if there is argument next to it
+      # move_count = 1
+
+    print("All Paths:", paths)
+
+    player_move = False
 
 
 # if len(reduce(lambda count, l: count + len(l), paths, 0)) % 2 == 0: print("\nCPU Wins the argument game!")
@@ -330,4 +302,3 @@ print("Listed:", listed)
 print("Player Path:", player_moves)
 print("CPU Path:", cpu_moves)
 print("All Paths:", paths)
-
