@@ -43,6 +43,10 @@ def create_framework(variable):
 # Creates the game tree for the given argument that has been selected as the initial
 def create_game_tree(framework, initial_argument, semantic):
 
+
+  grounded = False
+  prefered = False
+
   # Checks the semantic the game is to be played in, so it can create the correct possible paths
   if semantic == 'p':
     print("Prefered Game Type")
