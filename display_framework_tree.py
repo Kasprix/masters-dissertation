@@ -5,13 +5,16 @@ import matplotlib.pyplot as plt
 from framework_and_tree import create_framework
 
 
-
+# Function is called to make a visual representation of the Argumentation Framework
 def display_framework_tree(framework):
 
+
+  # Initiates Graph
   G = nx.DiGraph()
 
   attack_list = []
 
+  # Gets all attack relations between the argument agents
   for x in framework:
       if len(x.attacked_by) == 0:
         next
@@ -24,15 +27,10 @@ def display_framework_tree(framework):
   print("\n", attack_list, "\n")
 
 
-
+  # Adds all the edge relationships between the arguments
   G.add_edges_from(attack_list)
-
-
   black_edges = [edge for edge in G.edges()]
 
-
-
-  # Need to create a layout when doing
 
   # separate calls to draw nodes and edges
   pos = nx.spring_layout(G, scale = 2)
@@ -41,14 +39,9 @@ def display_framework_tree(framework):
   nx.draw_networkx_labels(G, pos)
   nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=True)
 
-  # Update
+
+  # Update, location will be called in the GUI
   plt.savefig("graphs/Graph.png", format="PNG")
   plt.clf()
 
 
-
-# Example
-
-'''test = create_framework(8)
-
-display_framework_tree(test)'''

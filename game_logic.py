@@ -21,8 +21,6 @@ import numpy as np
 from save_load import load_frameowrk, save_framework
 
 
-
-
 # ------------------- GETTERS -----------------------
 
 def get_game_type():
@@ -191,9 +189,9 @@ def play_game(framework, initial_argument, game_type):
                 print("CPU LOSES")
                 print("No more moves")
 
-                game_path_label.set(update_game_path(paths, game_path, active_game))
                 active_game = False
                 PLAYER_WIN = True
+                game_path_label.set(update_game_path(paths, game_path, active_game))
 
                 break
 
@@ -408,7 +406,6 @@ def populate_listbox():
 
         count += 1
 
-
 def display_hints():
     hint = 'Next move options: '
     if len(next_move_options) > 0:
@@ -420,7 +417,6 @@ def display_hints():
     print(hint)
 
     hint_message.set(hint)
-
 
 def checker(lst):
 
@@ -439,8 +435,6 @@ def checker(lst):
 
     return chk          
   
-
-
 def update_game_path(paths, game_path, active_game):
 
     game_path_string = str(game_path)
@@ -471,8 +465,6 @@ def update_game_path(paths, game_path, active_game):
 
     return display_path
 
-
-
 def remove_argument():
     f = os.path.join("pickles", listbox.get(listbox.curselection()))
     os.remove("pickles/" + listbox.get(listbox.curselection()) + ".pickle")
@@ -489,8 +481,6 @@ def load_argument():
     image_label.image = img2
 
     get_all_arguments()
-
-
 
 def clear_all_arguments():
 
@@ -520,9 +510,7 @@ def create_new_framework():
     populate_listbox()
 
 
-
-current_framework = create_framework(7)
-
+# Initialises Tkinter window to add widgets in
 window = tk.Tk()
 
 window.grid_columnconfigure(0, weight=1)
@@ -530,18 +518,14 @@ window.grid_columnconfigure(0, weight=1)
 # window.geometry('500x500')
 var = tkinter.StringVar()
 
-
-# first level, window as parent
-tk.Button(window, text='Browse ...').grid(row=1, column=0, sticky=tk.W, padx=5, pady=5)
-tk.Label(window, text='Choose file:').grid(row=0, column=0, sticky=tk.W, padx=5, pady=5)
-
+# Left side of the window
 LEFT_LEFT = tk.Frame(window)
-
 LEFT_LEFT.grid(row=2, column=0, sticky="nsew")
 
 
 window.grid_columnconfigure(0, weight=0)
 window.grid_columnconfigure(1, weight=1)
+
 
 # LEFT LEFT SIDE 
 tk.Label(LEFT_LEFT, text="Create an argument framework").grid(column=0, sticky="nsew", padx=5, pady=5)
@@ -552,24 +536,19 @@ framework_amount_entry.grid(column=0, sticky="nsew", padx=5, pady=5)
 
 tk.Button(LEFT_LEFT, text='CREATE & SAVE NEW FRAMEWORK', command=create_new_framework).grid(column=0, sticky="nsew", padx=5, pady=5)
 
-
 # LEFT RIGHT SIDE 
 tk.Label(LEFT_LEFT, text="Load an argument framework").grid(sticky=tk.NW, padx=5, pady=5)
-
 
 # Create a listbox
 listbox = Listbox(LEFT_LEFT, selectmode="SINGLE", exportselection=0)
  
-
-populate_listbox()
-        
+populate_listbox()     
 
 listbox.grid(sticky="nsew", padx=5, pady=5)
 
 tk.Button(LEFT_LEFT, text='LOAD FRAMEWORK', command=load_argument).grid(sticky="nsew", padx=5, pady=5)
 tk.Button(LEFT_LEFT, text='DELETE FRAMEWORK', command=remove_argument).grid(sticky="nsew", padx=5, pady=5)
 tk.Button(LEFT_LEFT, text='CLEAR ALL SAVED FRAMEWORKS', command=clear_all_arguments).grid(sticky="nsew", padx=5, pady=5)
-
 
 # RIGHT LEFT SIDE 
 RIGHT_LEFT = tk.Frame(window)
@@ -580,7 +559,6 @@ RIGHT_LEFT.grid(row=2, column=2, sticky=tk.N)
 img = ImageTk.PhotoImage(Image.open("graphs\Graph.png"),  master=LEFT_LEFT)
 image_label = tk.Label(LEFT_LEFT, image = img)
 image_label.grid(sticky="nsew",padx=5, pady=5)
-
 
 game_type = tk.StringVar(window)
 
@@ -605,7 +583,6 @@ label = tk.Label(RIGHT_LEFT, text="SELECT INITIAL ARGUMENT: ").grid(sticky="nsew
 
 # Create a listbox
 initial_argument_listbox = Listbox(RIGHT_LEFT, selectmode="SINGLE", exportselection=0)
-
 initial_argument_listbox.grid(column=3, padx=5, pady=5)
 
 # button
@@ -616,11 +593,13 @@ button = tk.Button(
 
 button.grid(column=3, sticky="nsew")
 
+# Allows for labels text to change 
 error_message = tk.StringVar()
 hint_message = tk.StringVar()
 
 # SECTION FOR USER TO MAKE NEXT MOVE
 tk.Label(RIGHT_LEFT, text="ENTER NEXT MOVE:").grid(column=3, sticky="nsew", padx=5, pady=5)
+
 
 next_move_entry = tk.Entry(RIGHT_LEFT)
 next_move_entry.grid(column=3, sticky="nsew", padx=5, pady=5)

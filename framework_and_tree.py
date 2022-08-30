@@ -5,6 +5,7 @@ from agent_init import create_agent
 
 # Makes List of Agents to create based on variable input by the user
 def create_framework(variable):
+
   # list of alphabet that ends at the char number passed through the def
   arguments_to_take = list(string.ascii_lowercase[:variable])
   agent_list = []
@@ -17,13 +18,9 @@ def create_framework(variable):
   for names in agent_list:
     # First Random Value
     random_value = random.randint(0,9)
-    # Second Random Value (Considering whether this is better than an arbitary number)
-    random_threshhold = random.randint(0,9)
     # Excludes the current argument in question to prevent arguing against itself 
     arguments_excluding_value = [x for x in agent_list if x != names]
 
-    # If the value is below the generated threshold, then the agent will attack a random agent
-    # TODO rather than using random_threshold, allow user to enter the odds of attack to determine the game
 
     # if value less than 8 then attack a random argument
     if random_value < 8:
@@ -43,20 +40,15 @@ def create_framework(variable):
 
   return agent_list
 
-# TODO Make a class possibly for the two users (Pro & Opp), have round system, even rounds PRO, odd rounds OPP
-
+# Creates the game tree for the given argument that has been selected as the initial
 def create_game_tree(framework, initial_argument, semantic):
 
-  grounded = False
-  prefered = False
-
-
+  # Checks the semantic the game is to be played in, so it can create the correct possible paths
   if semantic == 'p':
     print("Prefered Game Type")
     prefered = True
   elif semantic =='g':
     print("Grounded Game Type")
-
     grounded = True
 
 
@@ -83,7 +75,6 @@ def create_game_tree(framework, initial_argument, semantic):
   # Print all matches that start with initial argument
   print("Matches:", matches, "\n")
 
-  # print("New Attack List:", attack_list, "\n")
 
   # Adds first value to the search tree for the list of lists
   list_of_lists.append([initial_argument])
@@ -241,20 +232,3 @@ def create_game_tree(framework, initial_argument, semantic):
     if x[-1] == '':
       x.remove('')
   return list_of_lists
-
-    
-
-'''
-while True:
-    number_of_arguments = int(input("Select number of arguments to play with (Max 20):"))
-    if number_of_arguments > 20:
-      print("Not an appropriate choice.")
-    else:
-      break
-
-'''
-        
-# 8 for testing
-'''list_of_objects = create_framework(3)
-
-create_game_tree(list_of_objects, 'b', 'p')'''

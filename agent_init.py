@@ -13,12 +13,12 @@ class Agent:
     self.attacking = []
     self.attacked_by = []
 
-
-  # TODO see if this will allow easier viewing of attacked agents
+# Checks the arguments that attack a given agent
   def argument_state(agent):
     for x in agent.attacked_by:
       print(str_to_class(x))
 
+# Sets up Realtionships between agents
   def attack_agent(agent, victim):
 
         agent.attacking.append(victim)
