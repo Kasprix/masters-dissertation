@@ -34,7 +34,7 @@ def display_framework_tree(framework):
 
   # separate calls to draw nodes and edges
   pos = nx.spring_layout(G, scale = 2)
-  nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 300)
+  nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 200)
 
   nx.draw_networkx_labels(G, pos)
   nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=True)

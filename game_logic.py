@@ -85,6 +85,17 @@ def get_next_move_entry():
 
    return next_move_entry.get()
 
+def list_match(list1, list2):
+    match = False
+    matches = []
+
+    for x in list1:
+        for y in list2:
+            if x == y:
+                matches.append(x)
+
+    return matches
+
 def get_framework_size():
 
    print(framework_amount_entry.get())
@@ -192,7 +203,7 @@ def play_game(framework, initial_argument, game_type):
                     possible_moves = []
                     print(listed)
                     for x in listed:
-                        if x[0:move_count+1] == game_path and x[move_count+1] not in player_moves:
+                        if x[0:move_count+1] == game_path:
                             possible_moves.append(x)
 
             except IndexError:
@@ -274,14 +285,23 @@ def play_game(framework, initial_argument, game_type):
 
                 chosen_path = max(list_of_alternatives, key=len)
 
-                current_argument = chosen_path[-1]
-                move_count = len(chosen_path)-1
 
-                game_path = game_path[:move_count+1]
+                if not chosen_path:
+                    active_game = False
+                    CPU_WIN = True
+                    game_path_label.set(update_game_path(paths, game_path, active_game))
+                    break
+                else:
 
-                print("Selected Move:", current_argument)
-                print("Selected Point:", move_count)
-                print("Game Path", game_path)
+
+                    current_argument = chosen_path[-1]
+                    move_count = len(chosen_path)-1
+
+                    game_path = game_path[:move_count+1]
+
+                    print("Selected Move:", current_argument)
+                    print("Selected Point:", move_count)
+                    print("Game Path", game_path)
 
                 # makes checking for alternatives on the list at point [1] for CPU as that's next move, issue cause current argument isn't changed
                 # Take opps args, find if there is argument next to it
@@ -428,7 +448,10 @@ def play_game(framework, initial_argument, game_type):
 
     # Checks for winning path and if it has been apart of the paths played
     winners = find_winning_strategy(listed)
-    if PLAYER_WIN == True and bool(set(paths).intersection(winners)) : error_message.set("CONGRATULATIONS, PLAYER WINS WITH A WINNING STRATEGY INCLUDED: \n PATH:", set(paths).intersection(winners))
+    matches = list_match(paths,winners)
+
+    if matches:
+        if PLAYER_WIN == True and len(list_match(paths,winners) > 0) : error_message.set("CONGRATULATIONS, PLAYER WINS WITH A WINNING STRATEGY INCLUDED: \n PATH:", matches)
 
     game_path_label.set(update_game_path(paths, game_path, active_game))
 
@@ -499,6 +522,8 @@ def update_game_path(paths, game_path, active_game):
 
 
     if active_game is False:
+        display_path = ''
+        previous_paths = ''
         for path in paths:
             previous_paths = previous_paths + str(path) + "\n"
 
