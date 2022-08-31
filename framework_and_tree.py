@@ -22,7 +22,7 @@ def create_framework(variable):
     arguments_excluding_value = [x for x in agent_list if x != names]
 
 
-    # if value less than 8 then attack a random argument
+    # Bif value less than 8 then attack a random argument
     if random_value < 8:
       victim = random.choice(arguments_excluding_value)
       print(str(names.name), "Attacks", victim.name)

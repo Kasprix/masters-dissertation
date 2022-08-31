@@ -1,7 +1,7 @@
 import string
 from framework_and_tree import create_game_tree
 from save_load import load_frameowrk
-import itertools
+
 
 
 def remove_duplicates(list):
@@ -14,63 +14,58 @@ def remove_duplicates(list):
 
     return all_opps_individuals
 
-def find_winning_strategy(pro_winning_paths, all_opp_moves):
+# Function to find the paths that provide the winning strategy for the player
+def find_winning_strategy(framework):
+
+
+    # Filters through all the pa
+    winning_paths = [x for x in framework if len(x) % 2 == 1]
+
+    all_opp_args = []
+    
+    # Finda all the opponents moves that are made through the game tree
+    for x in winning_paths:
+        temp = x[1::2]
+        all_opp_args.append(temp)
+
+    # All the opponents moves within the game tree
+    all_opp_args = [j for i in all_opp_args for j in i]
+    # Prevents repatition of arguments
+    all_opp_args = remove_duplicates(all_opp_args)
+
+
     winning_strategies = []
 
-    for x in pro_winning_paths:
-        # Get all pro moves (even elements)
-        player_moves = x[0::2]
+    # If there's a path that responds to all the OPP moves made within the tree, this is the winning strategy the user can implement
+    for x in winning_paths:
+        # Get all opp moves (even elements)
+        opp_moves = x[1::2]
 
-        result =  all(elem in player_moves  for elem in all_opp_moves)
+        # Checks if all the opp moves are in the path, if so return true
+        result =  all(elem in opp_moves  for elem in all_opp_args)
 
+        # Add winning strategies to list to return from function
         if result:
             print("Match")
+            print("Winning strategy path", x)
+            print("All OPP Moves", all_opp_args)
             winning_strategies.append(x)
         
     return winning_strategies
 
-def scan_entire_framework(initial_argument, framework, semantic):
 
-    listed = create_game_tree(framework, initial_argument, semantic)
-
-    winning_paths = [x for x in listed if len(x) % 2 == 1]
-
-    all_opp_args = []
-
-    for x in listed:
-        temp = x[1::2]
-        all_opp_args.append(temp)
-
-
-    all_opp_args = [j for i in all_opp_args for j in i]
-    all_opp_args = remove_duplicates(all_opp_args)
-
-
-    winners = find_winning_strategy(winning_paths, all_opp_args)
-
-    if len(winners) > 0:
-        print("Winner found")
-
-
-    return winners
 
 
 FRAMEWORK_NAME = "5"
 SEMANTIC = 'p'
+initial_argument = 'b'
 framework = load_frameowrk(FRAMEWORK_NAME)
-letters_to_search = string.ascii_lowercase[:int(FRAMEWORK_NAME)]
-checker = False
 
-accrued_winners = []
+listed = create_game_tree(framework, initial_argument, SEMANTIC)
 
-for x in letters_to_search:
-    scanner = scan_entire_framework(x, framework, SEMANTIC)
-    accrued_winners.append(scanner)
 
-    if len(scanner) > 0: checker = True
+winners = find_winning_strategy(listed)
 
-print(checker)
-print(accrued_winners)
 
 
 '''

@@ -1,8 +1,6 @@
-import copy
 import random
 import time
 import tkinter
-from tkinter.tix import CheckList
 from framework_and_tree import create_framework, create_game_tree
 import os
 import string
@@ -16,9 +14,61 @@ from display_framework_tree import display_framework_tree
 
 import matplotlib.pyplot as plt
 from  matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import numpy as np
 
 from save_load import load_frameowrk, save_framework
+
+# ---------------------- WINNING STRATEGIES -------------------------
+
+def remove_duplicates(list):
+    # To remove duplicates
+    all_opps_individuals = []   
+
+    for l in list:
+        if l not in all_opps_individuals:
+            all_opps_individuals.append(l)
+
+    return all_opps_individuals
+
+# Function to find the paths that provide the winning strategy for the player
+def find_winning_strategy(framework):
+
+
+    # Filters through all the pa
+    winning_paths = [x for x in framework if len(x) % 2 == 1]
+
+    all_opp_args = []
+    
+    # Finda all the opponents moves that are made through the game tree
+    for x in winning_paths:
+        temp = x[1::2]
+        all_opp_args.append(temp)
+
+    # All the opponents moves within the game tree
+    all_opp_args = [j for i in all_opp_args for j in i]
+    # Prevents repatition of arguments
+    all_opp_args = remove_duplicates(all_opp_args)
+
+
+    winning_strategies = []
+
+    # If there's a path that responds to all the OPP moves made within the tree, this is the winning strategy the user can implement
+    for x in winning_paths:
+        # Get all opp moves (even elements)
+        opp_moves = x[1::2]
+
+        # Checks if all the opp moves are in the path, if so return true
+        result =  all(elem in opp_moves  for elem in all_opp_args)
+
+        # Add winning strategies to list to return from function
+        if result:
+            print("Match")
+            print("Winning strategy path", x)
+            print("All OPP Moves", all_opp_args)
+            winning_strategies.append(x)
+        
+    return winning_strategies
+
+
 
 
 # ------------------- GETTERS -----------------------
@@ -65,10 +115,7 @@ def get_all_arguments():
 
     count += 1
 
-
 # -------------------- GAME FUNCTION ------------------------
-
-
 
 def play_game(framework, initial_argument, game_type):
 
@@ -105,9 +152,6 @@ def play_game(framework, initial_argument, game_type):
 
 
     paths = []
-
-
-
 
     # GET ALL PLAYER AND CPU PATHS, IF LISTED STILL EXISTS, REMOVE ALL DUPLICATES FROM LIST
 
@@ -370,7 +414,6 @@ def play_game(framework, initial_argument, game_type):
 
                     path_search -= 2
 
-
                 chosen_path = max(list_of_alternatives, key=len)
 
                 current_argument = chosen_path[-1]
@@ -378,17 +421,18 @@ def play_game(framework, initial_argument, game_type):
 
                 game_path = game_path[:move_count+1]
 
-
             player_move = False
 
     if PLAYER_WIN == True: error_message.set("CONGRATULATIONS, PLAYER WINS")
     if CPU_WIN == True: error_message.set("PLAYER LOSES")
+
+    # Checks for winning path and if it has been apart of the paths played
+    winners = find_winning_strategy(listed)
+    if PLAYER_WIN == True and bool(set(paths).intersection(winners)) : error_message.set("CONGRATULATIONS, PLAYER WINS WITH A WINNING STRATEGY INCLUDED: \n PATH:", set(paths).intersection(winners))
+
     game_path_label.set(update_game_path(paths, game_path, active_game))
 
-
     print("All Paths:", paths)
-
-
 
 # ------------------- OTHER FUNCTIONS -----------------------
 
@@ -510,6 +554,8 @@ def create_new_framework():
     populate_listbox()
 
 
+# --------------------- GUI -----------------------
+
 # Initialises Tkinter window to add widgets in
 window = tk.Tk()
 
@@ -620,10 +666,6 @@ tk.Label(RIGHT_LEFT, textvariable=hint_message).grid(column=3, sticky="nsew", pa
 
 
 tk.Label(RIGHT_LEFT, textvariable=error_message).grid(column=3, sticky="nsew", padx=5, pady=20)
-
-
-
-
 
 tk.mainloop()
 
