@@ -134,10 +134,6 @@ def create_game_tree(framework, initial_argument, semantic):
           # Print all matches that start with initial argument
           print("Matches:", matches, "\n")
 
-          '''
-          for match in matches:
-            print("Individual match", match)
-          '''
 
           # Searches list of lists for arguments that attack x (If x is first in pair it means it is attacked by the second value ['a'],['b'] == A is attacked by B)    
           
@@ -153,7 +149,6 @@ def create_game_tree(framework, initial_argument, semantic):
               print("Before", advance_path[0])
               advance_path[0].insert(len(advance_path[0]), matches[i][1])
               print("After", advance_path[0])
-
 
               # Looks at value to see if it would be valid under the selected semantics
               # odd values, player moves. even values, CPU moves
@@ -208,8 +203,6 @@ def create_game_tree(framework, initial_argument, semantic):
                   advance_path[0].pop()
                   print("Incorrect path found")
                   next
-
-
 
             pruned = [h for h in listy if h[-2] == x]
           

@@ -11,10 +11,6 @@ from tkinter.messagebox import showinfo
 from PIL import ImageTk, Image
 from framework_and_tree import create_framework
 from display_framework_tree import display_framework_tree
-
-import matplotlib.pyplot as plt
-from  matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-
 from save_load import load_frameowrk, save_framework
 
 # ---------------------- WINNING STRATEGIES -------------------------
@@ -69,8 +65,6 @@ def find_winning_strategy(framework):
     return winning_strategies
 
 
-
-
 # ------------------- GETTERS -----------------------
 
 def get_game_type():
@@ -86,7 +80,6 @@ def get_next_move_entry():
    return next_move_entry.get()
 
 def list_match(list1, list2):
-    match = False
     matches = []
 
     for x in list1:
@@ -283,16 +276,15 @@ def play_game(framework, initial_argument, game_type):
                     path_search -= 2
 
 
-                chosen_path = max(list_of_alternatives, key=len)
+                
 
-
-                if not chosen_path:
+                if not list_of_alternatives:
                     active_game = False
                     CPU_WIN = True
                     game_path_label.set(update_game_path(paths, game_path, active_game))
                     break
                 else:
-
+                    chosen_path = max(list_of_alternatives, key=len)
 
                     current_argument = chosen_path[-1]
                     move_count = len(chosen_path)-1
@@ -320,17 +312,11 @@ def play_game(framework, initial_argument, game_type):
 
             print("\nPLAYER TURN (Move Count):", move_count, "\n")
 
-
             alternative_options = []
 
             next_move_options = []
 
-
-
             print("Current Move", current_argument)
-
-
-
 
             try:
                 if game_type == 'p':
@@ -359,8 +345,6 @@ def play_game(framework, initial_argument, game_type):
             print("Possible moves:", possible_moves)
 
             print("Game Path:", game_path)
-
-
 
             # Go possible moves fist then elif for other options then else no more moves
             if len(possible_moves) > 0 and active_game is True:
@@ -434,12 +418,20 @@ def play_game(framework, initial_argument, game_type):
 
                     path_search -= 2
 
-                chosen_path = max(list_of_alternatives, key=len)
 
-                current_argument = chosen_path[-1]
-                move_count = len(chosen_path)-1
 
-                game_path = game_path[:move_count+1]
+                if not list_of_alternatives:
+                    active_game = False
+                    CPU_WIN = True
+                    game_path_label.set(update_game_path(paths, game_path, active_game))
+                    break
+                else:
+                    chosen_path = max(list_of_alternatives, key=len)
+
+                    current_argument = chosen_path[-1]
+                    move_count = len(chosen_path)-1
+
+                    game_path = game_path[:move_count+1]
 
             player_move = False
 
